@@ -33,7 +33,8 @@
     "glob": "^4.0.5"
   },
   "keywords": [
-    "ember-addon"
+    "ember-addon",
+    "combobox"
   ],
   "ember-addon": {
     "configPath": "tests/dummy/config"

@@ -1,0 +1,9 @@
+{{ember-combobox-input value=inputValue aria-label=placeholder placeholder=placeholder}}
+
+{{#ember-combobox-toggle}}▾{{/ember-combobox-toggle}}
+
+{{#ember-combobox-list}}
+    {{#each item in dataSource}}
+        {{ember-combobox-option item=item optionValuePath=optionValuePath optionLabelPath=optionLabelPath}}
+    {{/each}}
+{{/ember-combobox-list}}

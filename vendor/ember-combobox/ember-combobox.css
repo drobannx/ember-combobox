@@ -1,7 +1,3 @@
-html, body {
-  margin: 20px;
-}
-
 ember-combobox {
     display: inline-block;
     position: relative;
@@ -64,4 +60,3 @@ ember-combobox-toggle {
     -ms-box-sizing: border-box;
     box-sizing: border-box;
 }
-
