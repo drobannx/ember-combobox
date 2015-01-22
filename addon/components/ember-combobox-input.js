@@ -12,7 +12,7 @@ export default Ember.TextField.extend({
 
     attributeBindings: [
         'aria-activedescendant',
-        'aria-autocomplete',
+        'aria-combobox',
         'aria-owns',
         'role'
     ],
@@ -27,17 +27,6 @@ export default Ember.TextField.extend({
      */
 
     role: 'combobox',
-
-    /**
-     * Tells screenreaders that the element uses a list as well as inline auto
-     * completion (updates text field, selects autocompleted portion).
-     *
-     * @property aria-autocomplete
-     * @private
-     */
-
-    'aria-autocomplete': 'both',
-
 
     /**
      * Convenience reference to the combobox component.

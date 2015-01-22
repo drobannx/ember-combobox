@@ -12,8 +12,6 @@ export default Ember.Component.extend({
 
     dataSource: [],
 
-    autocomplete: true,
-
     /**
      * Two-way bound property representing the current value.
      *
@@ -59,7 +57,6 @@ export default Ember.Component.extend({
      *
      * @method createOptions
      * @private
-     * TODO: What does this do?
      */
 
     createOptions: function() {
@@ -118,8 +115,8 @@ export default Ember.Component.extend({
      * Selects an option.
      *
      * @method selectOption
-     * @param option AutocompleteOptionComponent
-     * @param options Object - TODO: kill these options, should instead make
+     * @param option comboboxOptionComponent
+     * @param options Object -
      * `selectOption` do less, and have the call sites do the other operations
      * (like focusing the input, etc).
      *   @property close Boolean - Defaults true; if false, the menu will not
@@ -152,10 +149,6 @@ export default Ember.Component.extend({
      * Handle case where apps reset the list on select, you get new options
      * all registering and therefore an infinite loop of selecting the option
      * whose value matches the current value
-     *
-     * TODO: DRY up with selectOption (maybe?), or maybe there's a better way
-     * to prevent this when the option registers? The fact that we're doing the
-     * same operation minus some side-effects is unsettling.
      *
      * @method selectOptionWithoutPotentialRecursion
      * @private
@@ -198,10 +191,7 @@ export default Ember.Component.extend({
         if (this.get('value') === Ember.get(option, optionValuePath)) {
             if (this.get('selected')) {
                 // When a new option shows up with matching attributes as the selected
-                // option, select this new one instead but don't explode...  TODO: use
-                // `ignoreInputFocus` or probably better, when a the selection option
-                // is unregistered, clear out `selected` and then we dont' have to do
-                // this dance.
+                // option, select this new one instead but don't explode...
                 this.selectOptionWithoutPotentialRecursion(option);
             } else {
                 // When an option shows up with a matching value, select it but don't
@@ -210,15 +200,10 @@ export default Ember.Component.extend({
                 this.selectOption(option, {focus: false});
             }
         }
-        if (this.get('isOpen') && this.get('inputValue')) {
-            Ember.run.scheduleOnce('afterRender', this, 'autocompleteText');
-        }
     },
 
     /**
      * Removes an option from the options cache.
-     *
-     * TODO: should probably get rid of 'selected' if its selected.
      *
      * @method removeOption
      * @private
@@ -381,7 +366,7 @@ export default Ember.Component.extend({
     },
 
     /**
-     * Selects the focused or autocompleted option when the user hits enter on
+     * Selects the focused option when the user hits enter on
      * the keyboard. This is nice because then it selects all the text so they
      * can start typing again without having to delete everything first.
      *
@@ -478,7 +463,6 @@ export default Ember.Component.extend({
         }
         var option = this.optionsMap[value];
         if (option) {
-            // TODO: learn why we need the run loop here for the tests
             Ember.run(this, 'selectOption', option);
         }
     }.observes('value')

@@ -33,8 +33,7 @@ export default Ember.Component.extend({
     tabindex: -1,
 
     /**
-     * Attribute binding to facilitate CSS on selected options.  Can style with
-     * `ic-autocomplete-option[selected] {}`
+     * Attribute binding to facilitate CSS on selected options.
      *
      * @property selected
      * @private
@@ -56,18 +55,18 @@ export default Ember.Component.extend({
 
 
     /**
-     * Convenience reference to the autocomplete component.
+     * Convenience reference to the combobox component.
      *
-     * @property autocomplete
+     * @property combobox
      * @private
      */
 
     combobox: alias('parentView.parentView'),
 
     /**
-     * Registers itself with the autocomplete component.
+     * Registers itself with the combobox component.
      *
-     * @method registerWithAutocomplete
+     * @method registerWithCombobox
      * @private
      */
 
@@ -78,7 +77,7 @@ export default Ember.Component.extend({
     /**
      * Unregisters itself with the suggest component.
      *
-     * @method unregisterWithAutocomplete
+     * @method unregisterWithCombobox
      * @private
      */
 
