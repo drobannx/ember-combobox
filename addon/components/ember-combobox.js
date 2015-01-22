@@ -142,7 +142,7 @@ export default Ember.Component.extend({
         if (options.close !== false) {
             this.close();
         }
-        this.sendAction('on-select', this, option);
+        this.sendAction('on-select', option.get('item.' + this.get('optionValuePath')), option);
     },
 
     /**

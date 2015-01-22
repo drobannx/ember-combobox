@@ -5,8 +5,8 @@ export default Ember.Controller.extend({
         filterStates: function(autocomplete, term) {
             this.set('filteredStates', this.filterStatesBy(term));
         },
-        selectState: function() {
-            console.log("selected an item");
+        selectState: function(value, option) {
+            console.log("selected: " + value);
         }
     },
     selectedState: 'UT',
