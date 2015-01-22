@@ -40,13 +40,13 @@ export default Ember.TextField.extend({
 
 
     /**
-     * Convenience reference to the autocomplete component.
+     * Convenience reference to the combobox component.
      *
-     * @property autocomplete
+     * @property combobox
      * @private
      */
 
-    autocomplete: alias('parentView'),
+    combobox: alias('parentView'),
 
     /**
      * Tells the screenreader the list that this input owns.
@@ -67,6 +67,19 @@ export default Ember.TextField.extend({
     'aria-activedescendant': alias('parentView.selected.elementId'),
 
     /**
+     * @method registerWithParent
+     * @private
+     */
+
+    registerWithParent: function() {
+        this.get('parentView').registerInput(this);
+    }.on('didInsertElement'),
+
+    focus: function() {
+        this.$().focus();
+    },
+
+    /**
      * When focus is moved from the list to the input, close the list.
      *
      * @method closeOnFocus
@@ -74,11 +87,16 @@ export default Ember.TextField.extend({
      */
 
     closeOnFocus: function() {
-        var autocomplete = this.get('autocomplete');
-        if (autocomplete.get('ignoreInputFocus')) {
+        var combobox = this.get('combobox');
+        if (combobox.get('ignoreInputFocus')) {
             return;
         }
-        autocomplete.close();
-    }.on('focusIn')
+        combobox.close();
+    }.on('focusIn'),
+
+    blur: function() {
+        var combobox = this.get('combobox');
+        combobox.attemptBindOption();
+    }.on('focusOut')
 
 });

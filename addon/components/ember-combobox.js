@@ -10,6 +10,8 @@ export default Ember.Component.extend({
 
     inputValue: '',
 
+    dataSource: [],
+
     autocomplete: true,
 
     /**
@@ -32,7 +34,7 @@ export default Ember.Component.extend({
 
     /**
      * Attribute binding to allow styling of the component when it is open or
-     * not. Style with `ic-autocomplete[is-open] {}`
+     * not.
      *
      * @property is-open
      * @readonly
@@ -57,6 +59,7 @@ export default Ember.Component.extend({
      *
      * @method createOptions
      * @private
+     * TODO: What does this do?
      */
 
     createOptions: function() {
@@ -164,6 +167,14 @@ export default Ember.Component.extend({
         this.focusOption(option, {focus: false});
     },
 
+    setInitialInputValue: function() {
+        var val = this.get('value');
+
+        if(val) {
+            this.set('inputValue', val);
+        }
+    }.on('didInsertElement'),
+
     /**
      * @method setValueFromSelected
      * @private
@@ -221,24 +232,6 @@ export default Ember.Component.extend({
     },
 
     /**
-     * We don't want autocomplete to happen on backspace (feels super weird),
-     * so set the `isBackspacing` property so autocomplete won't do its thing.
-     *
-     * @method startBackspacing
-     * @private
-     */
-
-    startBackspacing: function() {
-        // prevents autocomplete from not happening (yes, double negative) on
-        // backspacing an empty input
-        // TODO: remember what the side-effect is ...
-        if (this.get('inputValue') === '') {
-            return;
-        }
-        this.set('isBackspacing', true);
-    },
-
-    /**
      * Flow control for handling keydown.
      *
      * @property keydownMap
@@ -279,58 +272,8 @@ export default Ember.Component.extend({
         }
         if (document.activeElement !== input) {
             input.focus();
-            // if its not backspace, then we want to select the input, since its
-            // keyDown, then on keyUp the contents will be replaced, but with
-            // backspace, we dont' want to do that.
-            if (event.keyCode !== 8/*backspace*/) {
-                input.select();
-            }
         }
     }.on('keyDown'),
-
-    /**
-     * When the user is typing we autocomplete with the label of the first option
-     * in the list. The autocompleted text gets selected so the component doesn't
-     * get in the way of typing.
-     *
-     * @method autocompleteText
-     * @private
-     */
-
-    autocompleteText: function() {
-        this.set('autocompletedOption', null);
-        if (!this.get('isOpen') || !this.get('options.length')) {
-            return;
-        }
-        if (this.get('isBackspacing')) {
-            this.set('isBackspacing', false);
-            return;
-        }
-        var first = this.get('options').objectAt(0);
-        if (first === this.get('autocompletedOption')) {
-            return;
-        }
-        var label = Ember.get(first, 'item.' + this.get('optionLabelPath'));
-        var input = this.get('inputValue');
-        if (input === '') {
-            return;
-        }
-        if (label.toLowerCase().indexOf(input.toLowerCase()) === -1) {
-            return;
-        }
-        var fragment = label.substring(input.length);
-        // since we are setting the input's value, we don't want the observers
-        // doing their thing
-        this.set('ignoreInputValue', true);
-        // tests need this, if the body is the active element when the test starts
-        // then it fails, if anything else has focus its fine :\
-        this.set('ignoreInputFocus', true);
-        Ember.run.later(this, 'set', 'ignoreInputFocus', false, 0);
-        var el = this.get('input');
-        el.value = label;
-        el.setSelectionRange(input.length, label.length);
-        this.set('autocompletedOption', first);
-    },
 
     /**
      * Observes the input's value and does a bunch of stuff... including sending
@@ -341,24 +284,7 @@ export default Ember.Component.extend({
      */
 
     onInput: function() {
-        // autocomplete set it, so just bail
-        if (this.get('ignoreInputValue')) {
-            this.set('ignoreInputValue', false);
-            return;
-        }
-        // we don't match anymore, clear selected, TODO: clear focused too?
-        if (this.get('selected.item.' + this.get('optionLabelPath')) !== this.get('inputValue')) {
-            //this.set('selected', null);
-        }
-        if (this.get('selected')) {
-            // TODO: WHY IS THIS HERE!?
-            return;
-        }
-        this.sendAction('on-input', this, this.get('inputValue'));
-        // TODO: later because ???
-        if (this.get('autocomplete')) {
-            Ember.run.scheduleOnce('afterRender', this, 'autocompleteText');
-        }
+        this.sendAction('valueChanged', this.get('inputValue'), this.get('selected.item'));
     }.observes('inputValue'),
 
     /**
@@ -455,24 +381,6 @@ export default Ember.Component.extend({
     },
 
     /**
-     * Selects the autocompleted option if there is one.
-     *
-     * @method maybeSelectAutocompletedOption
-     * @private
-     */
-
-    maybeSelectAutocompletedOption: function() {
-        var option = this.get('autocompletedOption');
-        if (option) {
-            if (option.get('isDestroyed')) {
-                return console.warn('autocomplete option was destroyed but was supposed to get selected');
-            }
-            this.selectOption(option, {focus: false, focusOption: false});
-            this.set('autocompletedOption', null);
-        }
-    },
-
-    /**
      * Selects the focused or autocompleted option when the user hits enter on
      * the keyboard. This is nice because then it selects all the text so they
      * can start typing again without having to delete everything first.
@@ -483,28 +391,17 @@ export default Ember.Component.extend({
 
     maybeSelectOnEnter: function(event) {
         event.preventDefault();
-        var selectedFocused = this.maybeSelectFocusedOption();
-        // TODO: fix this, its smelly. autocompleteText clears out autocompleted
-        // option, but if a new option shows up and gets autocompleted, nothing
-        // clears out autocompletedOption, so we only want to select it if we
-        // didn't select a focused option.
-        if (!selectedFocused) {
-            this.maybeSelectAutocompletedOption();
-        }
-        this.get('input').select();
+        this.maybeSelectFocusedOption();
     },
 
     /**
-     * Finds the input element
-     * TODO: do the typical register call from the input component instead
-     *
      * @method registerInput
      * @private
      */
 
-    registerInput: function() {
-        this.set('input', this.$('input')[0]);
-    }.on('didInsertElement'),
+    registerInput: function(input) {
+        this.set('input', input);
+    },
 
     /**
      * @method registerList
@@ -529,10 +426,7 @@ export default Ember.Component.extend({
     },
 
     /**
-     * Closes the list when focus moves away from the component. If there is a
-     * valid autocomplete happening, it selects it (it would be weird
-     * to have a valid label inside the text field but not have the autocomplete
-     * `value` match).
+     * Closes the list when focus moves away from the component.
      *
      * @method closeOnFocusOut
      * @private
@@ -541,17 +435,27 @@ export default Ember.Component.extend({
     closeOnFocusOut: function() {
         // later for document.activeElement to be correct
         Ember.run.later(this, function() {
-            // TODO: maybe handle focusOut of the elements we know about instead of
-            // an overarching check here? I'm sure there are bugs and edge cases I
-            // can't think about here by waiting before doing these checks (destroyed
-            // elements, etc.)
             var element = this.get('element');
             if (element && !element.contains(document.activeElement)) {
-                this.maybeSelectAutocompletedOption();
                 this.close();
             }
         }, 0);
     }.on('focusOut'),
+
+    attemptBindOption: function() {
+        if(!this.get('isOpen')) {
+            var _this = this,
+                data = this.get('options.content'),
+                currentValue = this.get('inputValue'),
+                option = data.filter(function(item) {
+                    return item.get('item')[_this.get('selectedValuePath')] === currentValue;
+                });
+
+            if(option.length === 1) {
+                this.selectOption(option[0]);
+            }
+        }
+    },
 
     /**
      * Observes the `value` property and selects the option with a matching value

@@ -2,30 +2,30 @@ import Ember from 'ember';
 
 export default Ember.Controller.extend({
     actions: {
-        filterStates: function(autocomplete, term) {
-            this.set('filteredStates', this.filterStatesBy(term));
+        rateChanged: function(value, option) {
+            console.log("Value changed to: " + value);
         },
         selectState: function(value, option) {
             console.log("selected: " + value);
         }
     },
-    selectedState: 'UT',
-    states: [
+    currentRate: '10.0',
+    rates: [
         {
-            name: 'Utah',
-            id: 'UT'
+            name: 'Rate 1',
+            id: '8.0'
         },
         {
-            name: 'Illinois',
-            id: 'IL'
+            name: 'Rate 2',
+            id: '10.0'
+        },
+        {
+            name: 'Rate 3',
+            id: '20.0'
+        },
+        {
+            name: 'Rate 4',
+            id: '25.0'
         }
-    ],
-    filterStatesBy: function(term) {
-        term = this.get('stateFilterTerm');
-        if(term === '') return this.get('states');
-        var filter = new RegExp('^'+term, 'i');
-        return this.get('states').filter(function(state) {
-            return filter.test(state.name) || filter.test(state.id);
-        });
-    }
-});
+    ]
+})

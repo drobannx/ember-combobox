@@ -62,7 +62,7 @@ export default Ember.Component.extend({
      * @private
      */
 
-    autocomplete: alias('parentView.parentView'),
+    combobox: alias('parentView.parentView'),
 
     /**
      * Registers itself with the autocomplete component.
@@ -71,8 +71,8 @@ export default Ember.Component.extend({
      * @private
      */
 
-    registerWithAutocomplete: function() {
-        this.get('autocomplete').registerOption(this);
+    registerWithCombobox: function() {
+        this.get('combobox').registerOption(this);
     }.on('willInsertElement'),
 
     /**
@@ -82,8 +82,8 @@ export default Ember.Component.extend({
      * @private
      */
 
-    unregisterWithAutocomplete: function() {
-        this.get('autocomplete').removeOption(this);
+    unregisterWithCombobox: function() {
+        this.get('combobox').removeOption(this);
     }.on('willDestroyElement'),
 
     /**
@@ -95,7 +95,7 @@ export default Ember.Component.extend({
 
     selectOnClick: function(event) {
         event.stopPropagation();
-        this.get('autocomplete').selectOption(this);
+        this.get('combobox').selectOption(this);
     }.on('click'),
 
     /**
@@ -123,10 +123,10 @@ export default Ember.Component.extend({
         options = options || {};
         this.set('focused', true);
         if (options.focusElement !== false) {
-            var isClosed = !this.get('autocomplete.isOpen');
+            var isClosed = !this.get('combobox.isOpen');
             var el = this.get('element');
             if (isClosed) {
-                this.get('autocomplete').open();
+                this.get('combobox').open();
                 // can't focus an element that isn't visible
                 Ember.run.scheduleOnce('afterRender', el, 'focus', 0);
             } else {
@@ -158,7 +158,7 @@ export default Ember.Component.extend({
         // element when users switch from mouse to keyboard.  I'm thinking of
         // tracking the last mouseEntered option instead of piggy backing with the
         // code that deals with focusing.
-        this.get('autocomplete').focusOption(this);
+        this.get('combobox').focusOption(this);
     }.on('mouseEnter'),
 
     /**

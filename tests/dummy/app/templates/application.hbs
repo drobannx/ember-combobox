@@ -1,12 +1,12 @@
-<h2 id="title">Welcome to Ember.js</h2>
+<h2 id="title">Rate Combobox example</h2>
 
-{{ember-combobox dataSource=states
-                 value=state
-                 on-input="filterStates"
+{{ember-combobox dataSource=rates
+                 value=currentRate
+                 valueChanged="rateChanged"
                  on-select="selectState"
                  optionValuePath="id"
                  optionLabelPath="name"
                  selectedValuePath="id"
-                 placeholder="Pick a state"}}
+                 placeholder="Pick a rate"}}
 
 {{outlet}}
