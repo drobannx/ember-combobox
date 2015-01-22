@@ -129,13 +129,11 @@ export default Ember.Component.extend({
      */
 
     selectOption: function(option, options) {
-        this.set('autocompletedOption', null);
-
         options = options || {};
         var selected = this.get('selected');
         if (selected) selected.deselect();
         this.set('selected', option);
-        this.set('inputValue', this.get('selected.' + this.get('optionLabelPath')));
+        this.set('inputValue', this.get('selected.item.' + this.get('optionLabelPath')));
         option.select();
         this.focusOption(option, {focusElement: options.focusOption});
         if (options.focus !== false) {
@@ -172,7 +170,7 @@ export default Ember.Component.extend({
      */
 
     setValueFromSelected: function() {
-        this.set('value', this.get('selected.value'));
+        this.set('value', this.get('selected.item.' + this.get('optionValuePath')));
     }.observes('selected'),
 
     /**
@@ -183,9 +181,10 @@ export default Ember.Component.extend({
      */
 
     registerOption: function(option) {
+        var optionValuePath = 'item.' + this.get('optionValuePath');
         this.get('options').pushObject(option);
-        this.optionsMap[option.get('value')] = option;
-        if (this.get('value') === option.item.get('value')) {
+        this.optionsMap[Ember.get(option, optionValuePath)] = option;
+        if (this.get('value') === Ember.get(option, optionValuePath)) {
             if (this.get('selected')) {
                 // When a new option shows up with matching attributes as the selected
                 // option, select this new one instead but don't explode...  TODO: use
@@ -311,7 +310,7 @@ export default Ember.Component.extend({
         if (first === this.get('autocompletedOption')) {
             return;
         }
-        var label = first.get('label');
+        var label = Ember.get(first, 'item.' + this.get('optionLabelPath'));
         var input = this.get('inputValue');
         if (input === '') {
             return;
@@ -342,17 +341,14 @@ export default Ember.Component.extend({
      */
 
     onInput: function() {
-        if (!this.get('isOpen')) {
-            this.open();
-        }
         // autocomplete set it, so just bail
         if (this.get('ignoreInputValue')) {
             this.set('ignoreInputValue', false);
             return;
         }
         // we don't match anymore, clear selected, TODO: clear focused too?
-        if (this.get('selected.label') !== this.get('inputValue')) {
-            this.set('selected', null);
+        if (this.get('selected.item.' + this.get('optionLabelPath')) !== this.get('inputValue')) {
+            //this.set('selected', null);
         }
         if (this.get('selected')) {
             // TODO: WHY IS THIS HERE!?
@@ -573,7 +569,7 @@ export default Ember.Component.extend({
             return;
         }
         // if it already matches, don't do any work
-        if (selected && value === selected.get('value')) {
+        if (selected && value === selected.get('item.' + this.get('optionValuePath'))) {
             return;
         }
         var option = this.optionsMap[value];

@@ -9,6 +9,7 @@ export default Ember.Controller.extend({
             console.log("selected an item");
         }
     },
+    selectedState: 'UT',
     states: [
         {
             name: 'Utah',

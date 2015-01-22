@@ -72,7 +72,7 @@ export default Ember.Component.extend({
      */
 
     registerWithAutocomplete: function() {
-        this.get('autocomplete').registerOption(this.item);
+        this.get('autocomplete').registerOption(this);
     }.on('willInsertElement'),
 
     /**
@@ -83,7 +83,7 @@ export default Ember.Component.extend({
      */
 
     unregisterWithAutocomplete: function() {
-        this.get('autocomplete').removeOption(this.item);
+        this.get('autocomplete').removeOption(this);
     }.on('willDestroyElement'),
 
     /**
@@ -95,7 +95,7 @@ export default Ember.Component.extend({
 
     selectOnClick: function(event) {
         event.stopPropagation();
-        this.get('autocomplete').selectOption(this.item);
+        this.get('autocomplete').selectOption(this);
     }.on('click'),
 
     /**
