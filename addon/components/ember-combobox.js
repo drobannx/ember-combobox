@@ -133,7 +133,7 @@ export default Ember.Component.extend({
         var selected = this.get('selected');
         if (selected) selected.deselect();
         this.set('selected', option);
-        this.set('inputValue', this.get('selected.item.' + this.get('optionLabelPath')));
+        this.set('inputValue', this.get('selected.item.' + this.get('selectedValuePath')));
         option.select();
         this.focusOption(option, {focusElement: options.focusOption});
         if (options.focus !== false) {
