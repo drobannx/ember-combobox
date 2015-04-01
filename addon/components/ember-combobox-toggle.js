@@ -9,6 +9,8 @@ export default Ember.Component.extend({
         'aria-hidden'
     ],
 
+    disabled:false,
+
     /**
      * Because the toggle shouldn't be tabbable, there's no reason to give it any
      * roles or even be visible to screen readers. The specs say it should have
@@ -36,7 +38,7 @@ export default Ember.Component.extend({
      */
 
     openListOnClick: function() {
-        this.get('parentView').toggleVisibility();
+        if( !this.get('disabled') ) this.get('parentView').toggleVisibility();
     }.on('click')
 
 });

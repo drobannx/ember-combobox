@@ -12,6 +12,8 @@ export default Ember.Component.extend({
 
     dataSource: [],
 
+    disabled: false,
+
     /**
      * Two-way bound property representing the current value.
      *
