@@ -9,6 +9,8 @@ export default Ember.Component.extend({
         'aria-hidden'
     ],
 
+    classNameBindings:['disabled:toggle-disabled'],
+
     disabled:false,
 
     /**
